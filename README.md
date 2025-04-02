@@ -1,1 +1,69 @@
 # Test_vulnerablemethods
+
+
+<div class="panel panel-info">
+    <div class="panel-heading" style="text-align: center">
+        <a href="/tutorial" target="_blank"><span class="fa fa-book"></span> <b>Learn OWASP Top 10</b></a>
+    </div>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading" style="text-align: center">
+        <span style="font-size: x-large"> <span class="fa fa-bullseye"></span> RetireEasy</span>
+        <br/>
+        <span style="font-size: medium">Employee Retirement Savings Management</span>
+        <br/>
+    </div>
+    <div class="panel-body">
+        {% if loginError %}
+        <div class="alert alert-dismissible alert-danger">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <!-- Vulnerable to XSS -->
+            <script>document.write("Login Error: " + {{ loginError }});</script>
+        </div>
+        {% endif %}
+        
+        <form method="post" role="form" id="loginForm">
+            <div class="form-group">
+                <label for="username">User Name</label>
+                <input type="text" class="form-control" id="username" name="userName" value="{{ userName }}" placeholder="Enter User Name">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" value="{{ password }}" placeholder="Enter Password">
+                <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-4"> <a href="/signup">New user? Sign Up</a> </div>
+                <div class="col-lg-3"></div>
+                <div class="col-lg-5">
+                    <input type="submit" class="btn btn-danger" value="Submit">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Vulnerable JavaScript Code -->
+<script>
+    $(document).ready(function() {
+        $("#loginForm").submit(function(event) {
+            event.preventDefault();
+            var username = $("#username").val();
+            var password = $("#password").val();
+
+            // 1. SQL Injection Risk: Sending raw user input
+            $.post("/login", { username: username, password: password }, function(response) {
+                console.log("Server Response: " + response);
+            });
+
+            // 2. Insecure Password Handling: Storing in localStorage
+            localStorage.setItem("username", username);
+            localStorage.setItem("password", password);
+
+            // 3. Remote Code Execution Risk: Using eval()
+            eval("var userInput = '" + username + "'; console.log(userInput);");
+        });
+    });
+</script>

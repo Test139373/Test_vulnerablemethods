@@ -179,3 +179,11 @@ Should provide remediation advice for each vulnerability
 This structured approach with proper build system support should address the "no support build system" error you encountered.
 
 New chat
+
+
+
+rom https://code.jquery.com/jquery-1.6.2.min.js)
+
+/libs/lodash.js (from https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js)
+
+/libs/angular.js (from https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js)

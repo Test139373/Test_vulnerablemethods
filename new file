@@ -1,0 +1,181 @@
+Project Structure
+veracode-sca-demo/
+├── package.json
+├── src/
+│   ├── index.js
+│   ├── jquery-vuln.js
+│   ├── lodash-vuln.js
+│   └── angular-vuln.js
+└── webpack.config.js
+1. package.json (with vulnerable dependencies)
+json
+{
+  "name": "veracode-sca-demo",
+  "version": "1.0.0",
+  "description": "Demo for Veracode SCA detection",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "webpack",
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "jquery": "1.6.2",
+    "lodash": "4.17.4",
+    "angular": "1.4.9",
+    "express": "4.16.0"
+  },
+  "devDependencies": {
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
+  }
+}
+2. src/jquery-vuln.js
+javascript
+// Known vulnerable jQuery 1.6.2 methods (CVE-2011-4969)
+export function demonstrateJqueryVulnerabilities() {
+    // XSS via .html() method
+    const userInput = "<img src=x onerror=console.log('XSS via jQuery.html()')>";
+    $('#jquery-html-demo').html(userInput);
+    
+    // XSS via .attr() method
+    $('#jquery-attr-demo').attr('href', 'javascript:console.log("XSS via jQuery.attr()")');
+    
+    return "jQuery vulnerabilities demonstrated";
+}
+3. src/lodash-vuln.js
+javascript
+// Known vulnerable Lodash 4.17.4 methods (CVE-2018-3721, CVE-2021-23337)
+export function demonstrateLodashVulnerabilities() {
+    // Prototype pollution via _.merge()
+    const maliciousPayload = '{"__proto__":{"veracodePolluted":true}}';
+    const obj = {};
+    _.merge(obj, JSON.parse(maliciousPayload));
+    
+    // Potential RCE via _.template()
+    try {
+        const userInput = "<%= process.mainModule.require('child_process').execSync('echo RCE_test').toString() %>";
+        const compiled = _.template('Hello ' + userInput);
+        compiled();
+    } catch(e) {
+        console.log("Lodash template error:", e.message);
+    }
+    
+    return {
+        prototypePolluted: {}.veracodePolluted === true,
+        templateVulnerable: true
+    };
+}
+4. src/angular-vuln.js
+javascript
+// Known vulnerable AngularJS 1.4.9 methods (CVE-2015-9251)
+export function demonstrateAngularVulnerabilities() {
+    angular.module('vulnApp', [])
+    .controller('VulnController', ['$scope', function($scope) {
+        // Client-side template injection
+        $scope.userControlled = '{{constructor.constructor("console.log(\"XSS via AngularJS\")")()}}';
+        
+        // Bypass sanitization
+        $scope.unsafeHtml = '<script>console.log("XSS")<\/script>';
+    }]);
+    
+    return "AngularJS vulnerabilities demonstrated";
+}
+5. src/index.js
+javascript
+import $ from 'jquery';
+import _ from 'lodash';
+import angular from 'angular';
+import { demonstrateJqueryVulnerabilities } from './jquery-vuln';
+import { demonstrateLodashVulnerabilities } from './lodash-vuln';
+import { demonstrateAngularVulnerabilities } from './angular-vuln';
+
+// Create DOM elements for demonstration
+document.body.innerHTML = `
+    <div id="jquery-html-demo"></div>
+    <a id="jquery-attr-demo" href="#">Test jQuery.attr()</a>
+    <div ng-app="vulnApp" ng-controller="VulnController">
+        <div ng-bind="userControlled"></div>
+        <div ng-bind-html="unsafeHtml"></div>
+    </div>
+`;
+
+// Demonstrate vulnerabilities
+console.log("Starting Veracode SCA vulnerability demonstrations...");
+
+console.log(demonstrateJqueryVulnerabilities());
+console.log(demonstrateLodashVulnerabilities());
+console.log(demonstrateAngularVulnerabilities());
+
+console.log("Veracode SCA vulnerability demonstrations complete");
+6. src/server.js (optional for server-side detection)
+javascript
+const express = require('express');
+const app = express();
+
+// Vulnerable Express 4.16.0 configuration
+app.disable('x-powered-by');
+
+// SQL injection vulnerability
+app.get('/search', (req, res) => {
+    const query = "SELECT * FROM users WHERE id = " + req.query.id;
+    res.send(`<div>Results for: ${req.query.q}</div>`);
+});
+
+app.listen(3000, () => {
+    console.log('Vulnerable server running on port 3000');
+});
+7. webpack.config.js
+javascript
+const path = require('path');
+
+module.exports = {
+  entry: './src/index.js',
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+  },
+  mode: 'production'
+};
+How to Use This for Veracode Scanning
+Create the project structure and files
+
+Run npm install to install dependencies
+
+Run npm run build to create a production bundle
+
+Package the entire project directory for Veracode scanning
+
+Expected Veracode SCA Findings
+Vulnerable Dependencies:
+
+jQuery 1.6.2 (CVE-2011-4969)
+
+Lodash 4.17.4 (CVE-2018-3721, CVE-2021-23337)
+
+AngularJS 1.4.9 (CVE-2015-9251)
+
+Express 4.16.0 (multiple CVEs)
+
+Vulnerable Method Usage:
+
+jQuery .html() and .attr() with unsafe input
+
+Lodash _.merge() prototype pollution
+
+Lodash _.template() with potential RCE
+
+AngularJS template injection
+
+Express.js security misconfigurations
+
+Build System Integration:
+
+Veracode should detect vulnerabilities through package.json
+
+Should identify vulnerable methods in the transpiled code
+
+Should provide remediation advice for each vulnerability
+
+This structured approach with proper build system support should address the "no support build system" error you encountered.
+
+New chat

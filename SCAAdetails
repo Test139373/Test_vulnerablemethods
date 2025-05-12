@@ -1,0 +1,66 @@
+Veracode SCA Detection Targets
+This code is specifically designed to trigger Veracode's SCA detection for:
+
+jQuery 1.6.2 (CVE-2011-4969)
+
+Vulnerable .html() method usage
+
+Vulnerable .attr() method usage with javascript: URLs
+
+Lodash 4.17.4 (CVE-2018-3721, CVE-2021-23337)
+
+Prototype pollution via _.merge()
+
+Potential RCE via _.template()
+
+AngularJS 1.4.9 (CVE-2015-9251)
+
+Client-side template injection vulnerabilities
+
+Unsafe expression evaluation
+
+Verification Steps with Veracode
+Agent-Based Scanning:
+
+The Veracode agent should detect all three outdated libraries
+
+Should flag each library with their respective CVEs
+
+Should identify the vulnerable method calls in the JavaScript code
+
+Expected Findings:
+
+jQuery XSS vulnerabilities in .html() and .attr() methods
+
+Lodash prototype pollution in _.merge()
+
+AngularJS client-side template injection
+
+Scan Configuration:
+
+Ensure your Veracode agent is configured to scan JavaScript files
+
+Make sure SCA is enabled in your policy
+
+Verify the agent has network access to download component databases
+
+Important Notes
+This code is for testing Veracode SCA capabilities only and should never be deployed to production.
+
+The actual detection may vary based on:
+
+Veracode agent version
+
+Scan configuration
+
+Policy settings
+
+For comprehensive testing, you may want to:
+
+Package this as a complete web application
+
+Include package.json/npm dependencies
+
+Add server-side components if testing full-stack detection
+
+New chat

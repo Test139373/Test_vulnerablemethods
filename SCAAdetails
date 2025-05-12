@@ -1,66 +1,45 @@
-Veracode SCA Detection Targets
-This code is specifically designed to trigger Veracode's SCA detection for:
+Package this with your application and run a Veracode scan.
+
+Expected Veracode SCA Findings
+Library Detection:
 
 jQuery 1.6.2 (CVE-2011-4969)
 
-Vulnerable .html() method usage
-
-Vulnerable .attr() method usage with javascript: URLs
-
 Lodash 4.17.4 (CVE-2018-3721, CVE-2021-23337)
-
-Prototype pollution via _.merge()
-
-Potential RCE via _.template()
 
 AngularJS 1.4.9 (CVE-2015-9251)
 
-Client-side template injection vulnerabilities
+Vulnerable Method Detection:
 
-Unsafe expression evaluation
+jQuery .html() with unsanitized input
 
-Verification Steps with Veracode
-Agent-Based Scanning:
+jQuery .attr() with JavaScript URLs
 
-The Veracode agent should detect all three outdated libraries
+Lodash _.merge() prototype pollution
 
-Should flag each library with their respective CVEs
+Lodash _.template() with user input
 
-Should identify the vulnerable method calls in the JavaScript code
+AngularJS template injection
 
-Expected Findings:
+Server-Side Findings (if used in Node.js):
 
-jQuery XSS vulnerabilities in .html() and .attr() methods
+Express.js security misconfigurations
 
-Lodash prototype pollution in _.merge()
+Potential SQL injection
 
-AngularJS client-side template injection
-
-Scan Configuration:
-
-Ensure your Veracode agent is configured to scan JavaScript files
-
-Make sure SCA is enabled in your policy
-
-Verify the agent has network access to download component databases
+Server-side XSS
 
 Important Notes
-This code is for testing Veracode SCA capabilities only and should never be deployed to production.
+This code is for Veracode testing purposes only and contains known vulnerabilities.
 
-The actual detection may vary based on:
+The Express.js vulnerabilities are commented out since they require Node.js, but they demonstrate what Veracode would find in server-side code.
 
-Veracode agent version
+Actual detection may vary based on:
 
-Scan configuration
+Veracode agent version and configuration
 
-Policy settings
+Scan policies
 
-For comprehensive testing, you may want to:
+Environment setup
 
-Package this as a complete web application
-
-Include package.json/npm dependencies
-
-Add server-side components if testing full-stack detection
-
-New chat
+Never deploy this code to production environments.

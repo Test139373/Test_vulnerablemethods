@@ -288,3 +288,30 @@ Would you like me to adjust any part of this structure for your specific scannin
 
 New chat
 
+{
+  "name": "veracode-scatest",
+  "version": "1.0.0",
+  "lockfileVersion": 2,
+  "requires": true,
+  "packages": {
+    "": {
+      "dependencies": {
+        "jquery": "file:libs/jquery-1.6.2.min.js",
+        "lodash": "file:libs/lodash-4.17.4.min.js",
+        "angular": "file:libs/angular-1.4.9.min.js"
+      }
+    },
+    "node_modules/jquery": {
+      "version": "1.6.2",
+      "resolved": "file:libs/jquery-1.6.2.min.js"
+    },
+    "node_modules/lodash": {
+      "version": "4.17.4",
+      "resolved": "file:libs/lodash-4.17.4.min.js"
+    },
+    "node_modules/angular": {
+      "version": "1.4.9",
+      "resolved": "file:libs/angular-1.4.9.min.js"
+    }
+  }
+}

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veracode SCA Detection Demo</title>
+    <!-- Intentionally vulnerable libraries that Veracode SCA will flag -->
+    <!-- jQuery 1.6.2 - Known XSS vulnerabilities (CVE-2011-4969) -->
+    <script src="https://code.jquery.com/jquery-1.6.2.min.js"></script>
+    
+    <!-- Lodash 4.17.4 - Prototype pollution (CVE-2018-3721) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+    
+    <!-- AngularJS 1.4.9 - Known XSS (CVE-2015-9251) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
+</head>
+<body ng-app="vulnApp">
+    <div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+        <h1>Veracode SCA Detection Test Page</h1>
+        <p><em>This page contains intentionally vulnerable components to demonstrate Veracode SCA detection capabilities.</em></p>
+        
+        <div ng-controller="VulnerableController as vm">
+            <!-- Section 1: jQuery XSS vulnerabilities -->
+            <div style="margin: 20px 0; padding: 15px; border: 1px solid #ddd;">
+                <h2>1. jQuery 1.6.2 XSS Vulnerabilities</h2>
+                
+                <h3>a) .html() Method XSS</h3>
+                <input type="text" id="jqueryHtmlInput" ng-model="vm.jqueryHtmlInput" placeholder="Enter text">
+                <button ng-click="vm.executeJqueryHtml()">Execute .html()</button>
+                <div id="jqueryHtmlOutput"></div>
+                <p><small>Veracode should detect CVE-2011-4969 in jQuery 1.6.2</small></p>
+                
+                <h3>b) .attr() Method XSS</h3>
+                <input type="text" id="jqueryAttrInput" ng-model="vm.jqueryAttrInput" placeholder="Enter URL" value="javascript:alert(1)">
+                <button ng-click="vm.executeJqueryAttr()">Execute .attr()</button>
+                <div id="jqueryAttrOutput"></div>
+            </div>
+            
+            <!-- Section 2: Lodash vulnerabilities -->
+            <div style="margin: 20px 0; padding: 15px; border: 1px solid #ddd;">
+                <h2>2. Lodash 4.17.4 Vulnerabilities</h2>
+                
+                <h3>a) Prototype Pollution via _.merge()</h3>
+                <button ng-click="vm.executeLodashMerge()">Execute _.merge()</button>
+                <div id="lodashMergeOutput"></div>
+                <p><small>Veracode should detect CVE-2018-3721 in Lodash 4.17.4</small></p>
+                
+                <h3>b) RCE Potential via _.template()</h3>
+                <input type="text" ng-model="vm.lodashTemplateInput" placeholder="Enter template">
+                <button ng-click="vm.executeLodashTemplate()">Execute _.template()</button>
+                <div id="lodashTemplateOutput"></div>
+            </div>
+            
+            <!-- Section 3: AngularJS vulnerabilities -->
+            <div style="margin: 20px 0; padding: 15px; border: 1px solid #ddd;">
+                <h2>3. AngularJS 1.4.9 XSS</h2>
+                
+                <h3>a) Client-Side Template Injection</h3>
+                <input type="text" ng-model="vm.angularExpression" placeholder="{{1+1}}">
+                <div ng-bind-html="vm.angularExpression"></div>
+                <p><small>Veracode should detect CVE-2015-9251 in AngularJS 1.4.9</small></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        angular.module('vulnApp', [])
+        .controller('VulnerableController', function($scope) {
+            var vm = this;
+            
+            // 1. jQuery vulnerable methods
+            vm.executeJqueryHtml = function() {
+                // Veracode should flag this jQuery version and .html() method
+                $('#jqueryHtmlOutput').html(vm.jqueryHtmlInput);
+            };
+            
+            vm.executeJqueryAttr = function() {
+                // Veracode should flag this jQuery version and .attr() method
+                $('#jqueryAttrOutput').html(
+                    $('<a>', {
+                        text: 'Click me',
+                        href: vm.jqueryAttrInput,
+                        target: '_blank'
+                    })
+                );
+            };
+            
+            // 2. Lodash vulnerable methods
+            vm.executeLodashMerge = function() {
+                // Veracode should flag this lodash version and _.merge method
+                var obj = {};
+                var payload = '{"__proto__":{"veracodeTest":true}}';
+                
+                _.merge(obj, JSON.parse(payload));
+                
+                if({}.veracodeTest === true) {
+                    $('#lodashMergeOutput').html('Prototype pollution successful!');
+                }
+            };
+            
+            vm.executeLodashTemplate = function() {
+                // Veracode should flag this lodash version and _.template method
+                try {
+                    var compiled = _.template('Hello ' + vm.lodashTemplateInput);
+                    $('#lodashTemplateOutput').text(compiled());
+                } catch(e) {
+                    $('#lodashTemplateOutput').text('Error: ' + e.message);
+                }
+            };
+            
+            // 3. AngularJS vulnerable patterns
+            vm.angularExpression = '{{1+1}}';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+{
+  "name": "veracode-sca-demo",
+  "version": "1.0.0",
+  "lockfileVersion": 2,
+  "requires": true,
+  "packages": {
+    "": {
+      "name": "veracode-sca-demo",
+      "version": "1.0.0",
+      "dependencies": {
+        "angular": "1.4.9",
+        "express": "4.16.0",
+        "jquery": "1.6.2",
+        "lodash": "4.17.4"
+      }
+    },
+    "node_modules/angular": {
+      "version": "1.4.9",
+      "resolved": "https://registry.npmjs.org/angular/-/angular-1.4.9.tgz"
+    },
+    "node_modules/express": {
+      "version": "4.16.0",
+      "resolved": "https://registry.npmjs.org/express/-/express-4.16.0.tgz"
+    },
+    "node_modules/jquery": {
+      "version": "1.6.2",
+      "resolved": "https://registry.npmjs.org/jquery/-/jquery-1.6.2.tgz"
+    },
+    "node_modules/lodash": {
+      "version": "4.17.4",
+      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.4.tgz"
+    }
+  }
+}

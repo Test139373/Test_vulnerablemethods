@@ -187,3 +187,104 @@ rom https://code.jquery.com/jquery-1.6.2.min.js)
 /libs/lodash.js (from https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js)
 
 /libs/angular.js (from https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js)
+
+
+const jquery = require('./libs/jquery-1.6.2.min.js');
+const lodash = require('./libs/lodash-4.17.4.min.js');
+const angular = require('./libs/angular-1.4.9.min.js');
+
+// Option 2: CDN references (for testing in browser)
+const cdnDependencies = {
+  jquery: 'https://code.jquery.com/jquery-1.6.2.min.js',
+  lodash: 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js',
+  angular: 'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js'
+};
+
+// Initialize vulnerable components
+function initializeVulnerabilities() {
+  // 1. jQuery XSS vulnerabilities
+  $('#vuln-container').html('<div id="xss-demo">XSS Target</div>');
+  $('#xss-demo').html('<img src=x onerror=console.log("jQuery.html() XSS")>');
+  
+  // 2. Lodash prototype pollution
+  const polluted = _.merge({}, JSON.parse('{"__proto__":{"isAdmin":true}}'));
+  console.log('Lodash prototype pollution:', {}.isAdmin);
+  
+  // 3. AngularJS template injection
+  angular.module('vulnApp', [])
+    .controller('MainCtrl', ['$scope', function($scope) {
+      $scope.unsafeExpression = '{{constructor.constructor("alert(1)")()}}';
+    }]);
+}
+
+// Export for Veracode scanning
+module.exports = {
+  dependencies: {
+    local: { jquery, lodash, angular },
+    cdn: cdnDependencies
+  },
+  initializeVulnerabilities
+};
+Corresponding package.json
+json
+{
+  "name": "veracode-scatest",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "jquery": "file:libs/jquery-1.6.2.min.js",
+    "lodash": "file:libs/lodash-4.17.4.min.js",
+    "angular": "file:libs/angular-1.4.9.min.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "build": "webpack --mode production"
+  }
+}
+Key Points for Veracode Detection:
+Local File References:
+
+Required for SCA to detect vulnerable versions
+
+Files must be physically present in your project
+
+Use require() statements pointing to local files
+
+Dual Reference Pattern:
+
+Shows both local and CDN references
+
+Helps Veracode identify components through multiple detection methods
+
+Vulnerable Method Usage:
+
+Explicit calls to known vulnerable methods (.html(), _.merge())
+
+Clear demonstration patterns that scanners recognize
+
+Module Exports:
+
+Makes dependencies visible to static analysis tools
+
+Provides clear entry points for scanning
+
+To use this setup:
+
+Place all library files in /libs/
+
+Keep this index.js as your main entry point
+
+Run npm install to generate proper node_modules and package-lock.json
+
+This structure maximizes Veracode's ability to:
+
+Detect vulnerable component versions
+
+Identify dangerous method usage
+
+Provide accurate remediation advice
+
+Would you like me to adjust any part of this structure for your specific scanning requirements?
+
+New chat
+
